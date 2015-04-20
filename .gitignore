@@ -1,4 +1,6 @@
 *.ml
 *.class
 *.cmi
-*.roperoject
+.rope*
+*.out
+*.swp

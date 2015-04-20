@@ -1,24 +1,28 @@
 #include <iostream>
-#include <cstring>
+#include <string>
 #include <vector>
 #include <algorithm>
 using namespace std;
 bool cmp(int a, int b){
-    return (a>b);
+    return (a<b);
 }
-
-string swap_string(string s, int index){
-    string left_part = s.substr(0, index);
-    string right_part = s.substr(s.size()-index, s.size());
-    for(int i=0; i<index; i++){
-        s[i] = right_part[i];
-    }
-    for(int i=s.size()-1; i>s.size() - index; i--){
-        s[i] = left_part[i];
+struct swap_index{
+    int l;
+    int u;
+};
+typedef struct swap_index swi;
+string swap_strings(string s, swi lsw){
+    for(int i=lsw.l; i<lsw.u; i++){
+        int lower_index=i-1;
+        int upper_index = s.size()-i;
+        if( i != s.size() - i + 1){
+            char temp = s[lower_index];
+            s[lower_index] = s[upper_index];
+            s[upper_index] = temp;
+        }
     }
     return s;
 }
-
 int main(){
     string s;
     int m;
@@ -26,49 +30,37 @@ int main(){
     cin>>m;
     vector<int> a;
     for(int i=0; i<m; i++){
-        int tmp;
-        cin>>tmp;
-        a.push_back(tmp);
+        int temp;
+        cin>>temp;
+        a.push_back(temp);
     }
     sort(a.begin(), a.end(), cmp);
-    vector<int>::iterator it = a.begin();
-    cout<<"asdasd";
-    while(it != a.end() && !a.empty()){
-        if ((it+1) != a.end()){
-            if(*it == *(it+1)){
-                *it = -1;
-                *(it+1) = -1;
-                it = it + 2;
-            }
-            else{
-                it++;
+    for(int i=0; i<a.size(); i++){
+        if(i != a.size()-1){
+            if(a[i] == a[i+1]){
+                a[i]=-1;
+                a[i+1]=-1;
             }
         }
-        else{
-            it++;
-        }
-
     }
     vector<int> b;
     for(int i=0; i<a.size(); i++){
-        if(a[i] == -1){
-            continue;
-        }
-        else{
+        if(a[i] != -1){
             b.push_back(a[i]);
         }
     }
-
-    for(int i=0; i<b.size();){
-        if(i+1 != b.size()){
-            int difference = b[i+1] -b[i];
-            int swap_index = difference;
-            s = swap_string(s, swap_index);
-            i = i+2;
-        }
-        else if(i+1 == b.size()){
-            reverse(s.begin()+b[i], s.end()- b[i]+1);
+    for(int i=0; i<b.size(); i++){
+        if(i!=b.size()-1){
+            struct swap_index lsw;
+            lsw.l = b[i];
+            lsw.u = b[i+1];
+            s = swap_strings(s, lsw);
             i++;
+        }
+        else{
+            int index = b[i] - 1;
+            int u_index = s.size() - index;
+            reverse(s.begin()+index, s.begin()+u_index);
         }
     }
     cout<<s;
