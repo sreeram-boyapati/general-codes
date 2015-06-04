@@ -22,15 +22,24 @@
  * SOFTWARE.
  */
 
+
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * Created by sreeram on 6/4/15.
+ *Created by sreeram on 6/4/15.
  */
 public class Digraph {
-
+    public final ArrayList<Integer> vertices = new ArrayList<Integer>();
+    public final Map<Integer, ArrayList<Integer>> adjacencyList = new HashMap<Integer, ArrayList<Integer>>();
+    int no_edges;
     public Digraph(int V){
-
+        for(int i=0; i<V; i++){
+            vertices.add(i);
+            adjacencyList.put(new Integer(i), new ArrayList<Integer>());
+        }
     }
 
     public Digraph(InputStream in){
@@ -38,25 +47,38 @@ public class Digraph {
     }
 
     public void addEdge(int v, int w){
-
+        /**
+         * Adds vertex w to the adjacency list of v
+         */
+        ArrayList<Integer> edges = adjacencyList.get(new Integer(v));
+        if(edges == null) {
+            throw new NullPointerException("Vertex does not exist");
+        }
+        edges.add(new Integer(w));
+        no_edges++;
+        adjacencyList.put(v, edges);
     }
 
     public Iterable<Integer> adj(int v){
-        return null;
+        ArrayList<Integer> list = adjacencyList.get(v);
+        if(list == null)
+            throw new NullPointerException("Vertex does not exist");
+        return list;
     }
 
     public int V(){
         /**
          * Returns number of vertices
+         *
          */
-     return 0;
+        return vertices.size();
     }
 
     public int E(){
         /**
          * Returns number of edges
          */
-        return 0;
+        return no_edges;
     }
 
     public Digraph reverse(){

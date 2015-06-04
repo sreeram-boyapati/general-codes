@@ -23,12 +23,13 @@
  */
 
 import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -44,19 +45,25 @@ public class WordNet {
     public WordNet(String synsets, String hypernyms){
         Path synsetPath = FileSystems.getDefault().getPath("..", synsets);
         Path hypsPath = FileSystems.getDefault().getPath("..", hypernyms);
+        syn_meaning_map = new HashMap<String, String>();
+        syn_word_map = new HashMap<String, ArrayList<String>>();
         try{
-            BufferedReader reader = Files.newBufferedReader(synsetPath);
-            String str = "";
+            //Decode strings using UTF-8
+            Charset charset = Charset.forName("UTF-8");
+            BufferedReader reader = Files.newBufferedReader(synsetPath, charset);
+            String str;
             int counter;
             for(counter=0; (str=reader.readLine())!= null; counter++){
                 processSynset(str);
             }
             reader.close();
+
             graph = new Digraph(counter);
-            BufferedReader hyp_reader = Files.newBufferedReader(hypsPath);
+            BufferedReader hyp_reader = Files.newBufferedReader(hypsPath, charset);
             for(counter=0; (str=hyp_reader.readLine())!=null; counter++) {
-                processHypernym();
+                processHypernym(str);
             }
+            reader.close();
         }
         catch(IOException io){
             log("File may not have been found or It might be empty.");
@@ -64,14 +71,14 @@ public class WordNet {
 
     }
 
-    // returns all WordNet nouns
     public Iterable<String> nouns(){
-        return null;
+        // returns all WordNet nouns
+        return syn_meaning_map.keySet();
     }
 
-    // is the word a WordNet noun?
     public boolean isNoun(String word){
-        return false;
+        // is the word a WordNet noun?
+        return syn_meaning_map.get(word) != null ? true: false;
     }
 
     // distance between nounA and nounB (defined below)
@@ -104,10 +111,12 @@ public class WordNet {
 
     }
 
-    private void Hypernym(String str){
+    private void processHypernym(String str){
         String[] tokens = str.split(",");
-        int v = (int)tokens[0];
-        graph.addEdge();
+            int v = Integer.parseInt(tokens[0]);
+        for(int i=1; i<tokens.length; i++){
+            graph.addEdge(v, Integer.parseInt(tokens[i]));
+        }
     }
 
     // do unit testing of this class
