@@ -4,3 +4,7 @@
 .rope*
 *.out
 *.swp
+.idea
+*.iml
+*.class*
+
