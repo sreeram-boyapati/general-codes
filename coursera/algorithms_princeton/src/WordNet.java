@@ -28,9 +28,7 @@ import java.nio.charset.Charset;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by sreeram on 6/4/15.
@@ -40,6 +38,7 @@ public class WordNet {
     Digraph graph;
     Map<String, String> syn_meaning_map;
     Map<String, ArrayList<String>> syn_word_map;
+    Map<String, String> reverse_syn_word_map;
 
     // constructor takes the name of the two input files
     public WordNet(String synsets, String hypernyms){
@@ -47,6 +46,7 @@ public class WordNet {
         Path hypsPath = FileSystems.getDefault().getPath("..", hypernyms);
         syn_meaning_map = new HashMap<String, String>();
         syn_word_map = new HashMap<String, ArrayList<String>>();
+        reverse_syn_word_map = new HashMap<String, String>();
         try{
             //Decode strings using UTF-8
             Charset charset = Charset.forName("UTF-8");
@@ -83,7 +83,30 @@ public class WordNet {
 
     // distance between nounA and nounB (defined below)
     public int distance(String nounA, String nounB){
-        return 0;
+        Integer source_id = Integer.parseInt(reverse_syn_word_map.get(nounA));
+        Integer dist_id = Integer.parseInt(reverse_syn_word_map.get(nounB));
+
+    }
+
+    private int dfs(Integer source_id){
+        Map<Integer, Boolean> marked_vertices = new HashMap<Integer, Boolean>();
+        Stack<Integer> vertices = new Stack<Integer>();
+        vertices.push(source_id);
+        while(!vertices.empty()) {
+            Integer vertex = vertices.pop();
+            Iterable<Integer> adjacent_vertices = graph.adj(source_id);
+            Iterator<Integer> iterator = adjacent_vertices.iterator();
+            if (!iterator.hasNext()) {
+                return 0;
+            }
+            while (iterator.hasNext()) {
+                Integer sibling_vertex = iterator.next();
+                if (!marked_vertices.getOrDefault(sibling_vertex, false)) {
+                    continue;
+                }
+                vertices.push(vertex);
+            }
+        }
     }
 
     // a synset (second field of synsets.txt) that is the common ancestor of nounA and nounB
@@ -106,6 +129,7 @@ public class WordNet {
         ArrayList<String> words = new ArrayList<String>();
         for(String syn: synonyms){
             words.add(syn);
+            reverse_syn_word_map.put(syn, id);
         }
         syn_word_map.put(id, words);
 

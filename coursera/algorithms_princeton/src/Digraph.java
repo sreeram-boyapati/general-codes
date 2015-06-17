@@ -43,7 +43,6 @@ public class Digraph {
     }
 
     public Digraph(InputStream in){
-
     }
 
     public void addEdge(int v, int w){
