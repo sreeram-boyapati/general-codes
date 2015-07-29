@@ -5,13 +5,13 @@
 
 using namespace std;
 int n;
-int line[200000];
+long long int line[200000];
 
 void new_swap(int k, int j){
-    int prev_k = line[k];
-    int prev_j = line[j];
-    int tmp = line[k] - 1;
-    int tmp2 = line[j] + 1;
+    long long int prev_k = line[k];
+    long long int prev_j = line[j];
+    long long int tmp = line[k] - 1;
+    long long int tmp2 = line[j] + 1;
     line[j] = tmp;
     line[k] = tmp2;
     if(line[j] == prev_j && line[k] == prev_k){
