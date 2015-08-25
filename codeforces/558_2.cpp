@@ -1,10 +1,15 @@
+<<<<<<< HEAD
 #include<iostream>
+=======
+#include <iostream>
+>>>>>>> add few problems
 #include <map>
 using namespace std;
 int main(){
     int n;
     cin>>n;
     int a[n];
+<<<<<<< HEAD
     int max_value=-1;
     map<int, int> count_num;
     map<int, int> distance;
